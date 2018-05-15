@@ -14,9 +14,9 @@ func typeOfProp(propName string, prop interface{}) (string, error) {
 	case string:
 		propType = "String"
 	case float64:
-		propType = "double"
+		propType = "num"
 	case int:
-		propType = "int"
+		propType = "num"
 	case map[string]interface{}:
 		propType = childObjectClassNameFromPropName(propName)
 	default:
