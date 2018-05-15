@@ -1,4 +1,8 @@
-This tool converts json to dart code.
+# json2dart
+
+Converts Json to Dart code.
+
+_work in progress!_
 
 ### Example Usage
 
