@@ -1,9 +1,8 @@
 package lib
 
 import (
-	"github.com/Jeffail/gabs"
+	"github.com/jeffail/gabs"
 	"fmt"
-	"reflect"
 	"io/ioutil"
 	"strings"
 )
@@ -42,38 +41,57 @@ func Json2Dart(json, rootClassName string) (string, error) {
 		return "", fmt.Errorf("err parsing input json : %v", err.Error())
 	}
 
-	children, err := jsonParsed.ChildrenMap()
+	classes, err := containerToClasses(jsonParsed, rootClassName, []string{})
+	if err != nil {
+		return "", fmt.Errorf("err converting container to classes : %v", err.Error())
+	}
+	
+	return strings.Join(classes, "\n\n"), nil
+}
+
+func containerToClasses(c *gabs.Container, className string, classes []string) ([]string, error) {
+	nestedClasses, err := buildNestedClasses(c, classes)
+	if err != nil {
+		return []string{}, fmt.Errorf("err getting nested classes : %v", err.Error())
+	}
+
+	classes = append(classes, nestedClasses...)
+
+	classCurrent, err := buildCurrentClass(c, className)
+	if err != nil {
+		return []string{}, fmt.Errorf("err converting current class : %v", err.Error())
+	}
+
+	classes = append(classes, classCurrent)
+
+	return classes, nil
+}
+
+func buildCurrentClass(c *gabs.Container, className string) (string, error) {
+	props, err := c.ChildrenMap()
 	if err != nil {
 		return "", fmt.Errorf("err parsing input json children : %v", err.Error())
 	}
 
-	return createClass(rootClassName, children)
-}
-
-func createClass(name string, properties map[string]*gabs.Container) (string, error) {
-	if name == "" {
-		name = "RootClass"
-	}
-
-	propsHead, err := propsList(properties)
+	propsHead, err := propsList(props)
 	if err != nil {
 		return "", fmt.Errorf("err building props list : %v", err.Error())
 	}
 
-	constructor, err := constructor(name, properties)
+	constructor, err := constructor(className, props)
 	if err != nil {
 		return "", fmt.Errorf("err building constructor")
 	}
 
-	propsAssignment, err := propsAssignment(properties)
+	propsAssignment, err := propsAssignment(props)
 	if err != nil {
-		return "", fmt.Errorf("err building props assigment : %v", err.Error())
+		return "",fmt.Errorf("err building props assigment : %v", err.Error())
 	}
 
 	return fmt.Sprintf(`
 		class %v {
 			%v
-			
+
 			%v
 
 			factory %v.fromJson(Map<String, dynamic> json) {
@@ -82,61 +100,29 @@ func createClass(name string, properties map[string]*gabs.Container) (string, er
 				);
 			}
 		}
-	`, name, propsHead, constructor, name, name, propsAssignment), nil
+	`, className, propsHead, constructor, className, className, propsAssignment), nil
 }
 
-func propsList(properties map[string]*gabs.Container) (string, error) {
-	out := ``
-	for propName, v := range properties {
-		propType, err := typeOfProp(v.Data())
-		if err != nil {
-			return "", fmt.Errorf("err getting prop type of %v : %v", v.Data(), err.Error())
+
+func buildNestedClasses(c *gabs.Container, classes []string) ([]string, error) {
+	props, err := c.ChildrenMap()
+	if err != nil {
+		return []string{}, fmt.Errorf("err parsing input json children : %v", err.Error())
+	}
+
+	for propName, propContainer := range props {
+		switch propContainer.Data().(type) {
+		case map[string]interface{}:
+			className := childObjectClassNameFromPropName(propName)
+
+			return containerToClasses(propContainer, className, classes)
+		default:
+
 		}
-
-		out = fmt.Sprintf(`%v
-			final %v %v;`, out, propType, strings.Replace(propName, " ", "_", -1))
 	}
 
-	return out, nil
+	return []string{}, nil
 }
 
-func constructor(className string, properties map[string]*gabs.Container) (string, error) {
-	out := fmt.Sprintf("%v({", className)
-	for propName := range properties {
-		out = fmt.Sprintf(`%vthis.%v,`, out, cleanPropName(propName))
-	}
-	out = strings.TrimRight(out, ",")
-	out = fmt.Sprintf("%v})", out)
 
-	return out, nil
-}
 
-func propsAssignment(properties map[string]*gabs.Container) (string, error) {
-	out := ""
-	for propNameRaw := range properties {
-		propName := cleanPropName(propNameRaw)
-		out = fmt.Sprintf(`%v
-					%v: json['%v'],`, out, propName, propNameRaw)
-	}
-
-	return out, nil
-}
-
-func typeOfProp(prop interface{}) (string, error) {
-	propType := ""
-	switch prop.(type) {
-	case string:
-		propType = "String"
-	case float64:
-		propType = "double"
-	case int:
-		propType = "int"
-	default:
-		return "", fmt.Errorf("invalid head prop type : %v", reflect.TypeOf(prop))
-	}
-	return propType, nil
-}
-
-func cleanPropName(name string) string {
-	return strings.Replace(name, " ", "_", -1)
-}
