@@ -10,24 +10,24 @@ _work in progress!_
 λ curl https://jsonplaceholder.typicode.com/posts/1 | go run json2dart.go
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
                                  Dload  Upload   Total   Spent    Left  Speed
-100   292  100   292    0     0   4336      0 --:--:-- --:--:-- --:--:--  4358
-2018/05/15 23:41:49 converting...
-2018/05/15 23:41:49 done!
-2018/05/15 23:41:49
-class Xxx {
+100   292  100   292    0     0   4825      0 --:--:-- --:--:-- --:--:--  4866
+2018/05/15 23:43:39 converting...
+2018/05/15 23:43:39 done!
+2018/05/15 23:43:39
+class Root {
+	final String title;
 	final String body;
 	final double userId;
 	final double id;
-	final String title;
 
-	Xxx({this.title,this.body,this.userId,this.id})
+	Root({this.userId,this.id,this.title,this.body})
 
-	Xxx.fromJson(Map<String, dynamic> json) {
-		return new Xxx(
-			body: json['body'],
+	Root.fromJson(Map<String, dynamic> json) {
+		return new Root(
 			userId: json['userId'],
 			id: json['id'],
 			title: json['title'],
+			body: json['body'],
 		);
 	}
 }

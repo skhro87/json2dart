@@ -29,7 +29,7 @@ func main() {
 
 	log.Printf("converting...")
 
-	res, err := lib.Json2Dart(string(inputBytes), "XXX")
+	res, err := lib.Json2Dart(string(inputBytes), "Root")
 	if err != nil {
 		log.Fatalf("err converting : %v", err.Error())
 	}
