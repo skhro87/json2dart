@@ -52,7 +52,7 @@ func Json2Dart(json, rootClassName string) (string, error) {
 
 func createClass(name string, properties map[string]*gabs.Container) (string, error) {
 	if name == "" {
-		name = "XXX"
+		name = "RootClass"
 	}
 
 	propsHead, err := propsList(properties)

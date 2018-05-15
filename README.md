@@ -34,3 +34,9 @@ _work in progress!_
                         }
                 }
 ```
+
+### To-Do
+- [x] basic implementation
+- [ ] add file output support
+- [ ] add nested object support
+- [ ] make it pretty ^^
