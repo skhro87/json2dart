@@ -15,19 +15,19 @@ _work in progress!_
 2018/05/15 23:43:39 done!
 2018/05/15 23:43:39
 class Root {
+	final num id;
 	final String title;
 	final String body;
-	final double userId;
-	final double id;
+	final num userId;
 
-	Root({this.userId,this.id,this.title,this.body})
+	Root({this.title,this.body,this.userId,this.id})
 
 	Root.fromJson(Map<String, dynamic> json) {
 		return new Root(
-			userId: json['userId'],
-			id: json['id'],
 			title: json['title'],
 			body: json['body'],
+			userId: json['userId'],
+			id: json['id'],
 		);
 	}
 }
