@@ -37,6 +37,7 @@ _work in progress!_
 
 ### To-Do
 - [x] basic implementation
+- [x] add nested object support
+- [ ] add array support
 - [ ] add file output support
-- [ ] add nested object support
 - [ ] make it pretty ^^
