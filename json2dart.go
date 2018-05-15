@@ -35,5 +35,5 @@ func main() {
 	}
 
 	log.Printf("done!")
-	log.Printf("%v", res)
+	log.Printf("\n%v", res)
 }

@@ -25,19 +25,19 @@ func typeOfProp(propName string, prop interface{}) (string, error) {
 	return propType, nil
 }
 
-func propsList(properties map[string]*gabs.Container) (string, error) {
-	out := ``
+func linesFields(properties map[string]*gabs.Container) ([]string, error) {
+	var lines []string
 	for propName, prop := range properties {
 		propType, err := typeOfProp(propName, prop.Data())
 		if err != nil {
-			return "", fmt.Errorf("err getting prop type of %v : %v", prop.Data(), err.Error())
+			return []string{}, fmt.Errorf("err getting prop type of %v : %v", prop.Data(), err.Error())
 		}
 
-		out = fmt.Sprintf(`%v
-			final %v %v;`, out, propType, strings.Replace(propName, " ", "_", -1))
+		line := fmt.Sprintf("final %v %v;", propType, cleanPropName(propName))
+		lines = append(lines, line)
 	}
 
-	return out, nil
+	return lines, nil
 }
 
 func constructor(className string, properties map[string]*gabs.Container) (string, error) {
@@ -51,15 +51,15 @@ func constructor(className string, properties map[string]*gabs.Container) (strin
 	return out, nil
 }
 
-func propsAssignment(properties map[string]*gabs.Container) (string, error) {
-	out := ""
+func linesFromJson(properties map[string]*gabs.Container) ([]string, error) {
+	var lines []string
 	for propNameRaw := range properties {
 		propName := cleanPropName(propNameRaw)
-		out = fmt.Sprintf(`%v
-					%v: json['%v'],`, out, propName, propNameRaw)
+		line := fmt.Sprintf("%v: json['%v'],", propName, propNameRaw)
+		lines = append(lines, line)
 	}
 
-	return out, nil
+	return lines, nil
 }
 
 func childObjectClassNameFromPropName(propName string) string {

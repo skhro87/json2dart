@@ -73,7 +73,7 @@ func buildCurrentClass(c *gabs.Container, className string) (string, error) {
 		return "", fmt.Errorf("err parsing input json children : %v", err.Error())
 	}
 
-	propsHead, err := propsList(props)
+	linesFields, err := linesFields(props)
 	if err != nil {
 		return "", fmt.Errorf("err building props list : %v", err.Error())
 	}
@@ -83,24 +83,27 @@ func buildCurrentClass(c *gabs.Container, className string) (string, error) {
 		return "", fmt.Errorf("err building constructor")
 	}
 
-	propsAssignment, err := propsAssignment(props)
+	linesFromJson, err := linesFromJson(props)
 	if err != nil {
 		return "",fmt.Errorf("err building props assigment : %v", err.Error())
 	}
 
-	return fmt.Sprintf(`
-		class %v {
-			%v
+	return buildClassFromParts(className, linesFields, constructor, linesFromJson), nil
+}
 
-			%v
-
-			factory %v.fromJson(Map<String, dynamic> json) {
-				return new %v(
-					%v
-				);
-			}
-		}
-	`, className, propsHead, constructor, className, className, propsAssignment), nil
+func buildClassFromParts(className string, linesFields []string, constructor string, linesFromJson []string) string {
+	res := fmt.Sprintf("class %v {", className)
+	for _, l := range linesFields {
+		res = fmt.Sprintf("%v\n\t%v", res, l)
+	}
+	res = fmt.Sprintf("%v\n\n\t%v", res, constructor)
+	linesFactory := fmt.Sprintf("%v.fromJson(Map<String, dynamic> json) {\n\t\treturn new %v(", className, className)
+	res = fmt.Sprintf("%v\n\n\t%v", res, linesFactory)
+	for _, l := range linesFromJson {
+		res = fmt.Sprintf("%v\n\t\t\t%v", res, l)
+	}
+	res = fmt.Sprintf("%v\n\t\t);\n\t}\n}", res)
+	return res
 }
 
 
