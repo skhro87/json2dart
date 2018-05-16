@@ -100,6 +100,6 @@ class Root {
 - [x] basic implementation
 - [x] add nested object support
 - [x] add array support
-- [ ] improve input/output options
+- [x] improve input/output options
 - [ ] proper tests / edge cases
 - [ ] make it pretty ^^
