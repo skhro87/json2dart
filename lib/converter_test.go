@@ -12,7 +12,7 @@ func TestJson2Dart(t *testing.T) {
 		t.Fatalf(err.Error())
 	}
 
-	err = Json2DartFile(string(example), "Root", "")
+	_, err = Json2Dart(string(example), "Root")
 	assert.Nil(t, err)
 }
 

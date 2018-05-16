@@ -4,6 +4,32 @@ Converts Json to Dart code.
 
 _work in progress!_
 
+### Help
+
+```
+λ ./json2dart --help
+NAME:
+   json2dart - convert json to dart code
+
+USAGE:
+   json2dart [global options] command [command options] [arguments...]
+
+VERSION:
+   0.1.0
+
+COMMANDS:
+     help, h  Shows a list of commands or help for one command
+
+GLOBAL OPTIONS:
+   --in value     specify input file
+   --out value    specify output file(s) folder (default: "./model_generated")
+   --class value  name of root class (default: "Root")
+   --split        split generated classes into multiple files
+   --no-files     disable output to file(s)
+   --help, -h     show help
+   --version, -v  print the version
+```
+
 ### Example Usage
 
 ```javascript
@@ -24,7 +50,7 @@ _work in progress!_
 ```
 
 ```dart
-λ go build && cat example.json | json2dart.exe
+λ cat example.json | json2dart
 2018/05/16 11:33:37 converting...
 2018/05/16 11:33:37 done!
 2018/05/16 11:33:37
