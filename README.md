@@ -51,9 +51,6 @@ GLOBAL OPTIONS:
 
 ```dart
 λ cat example.json | json2dart
-2018/05/16 11:33:37 converting...
-2018/05/16 11:33:37 done!
-2018/05/16 11:33:37
 class Something {
         final String beard;
         final num items;
