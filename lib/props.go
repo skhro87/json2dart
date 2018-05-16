@@ -8,7 +8,7 @@ import (
 	"reflect"
 )
 
-func typeOfProp(propName string, prop interface{}) (string, error) {
+func propTypeDart(propName string, prop interface{}) (string, error) {
 	propType := ""
 	switch prop.(type) {
 	case string:
@@ -28,7 +28,7 @@ func typeOfProp(propName string, prop interface{}) (string, error) {
 func linesFields(properties map[string]*gabs.Container) ([]string, error) {
 	var lines []string
 	for propName, prop := range properties {
-		propType, err := typeOfProp(propName, prop.Data())
+		propType, err := propTypeDart(propName, prop.Data())
 		if err != nil {
 			return []string{}, fmt.Errorf("err getting prop type of %v : %v", prop.Data(), err.Error())
 		}
@@ -36,7 +36,28 @@ func linesFields(properties map[string]*gabs.Container) ([]string, error) {
 		var line string
 		switch prop.Data().(type) {
 		case []interface{}:
-			line = fmt.Sprintf("final List<%v> %v;", propType, cleanPropName(propName))
+			count, err := prop.ArrayCount()
+			if err != nil {
+				return []string{}, fmt.Errorf("err getting count from array : %v", err.Error())
+			}
+
+			if count > 0 {
+				containerFirstInArray, err := prop.ArrayElement(0)
+				if err != nil {
+					return []string{}, fmt.Errorf("err getting first child of array : %v", err.Error())
+				}
+
+				switch containerFirstInArray.Data().(type) {
+				case string, int, float64:
+					propTypeFirstInArray, err := propTypeDart(propName, containerFirstInArray.Data())
+					if err != nil {
+						return []string{}, fmt.Errorf("err getting prop type : %v", err.Error())
+					}
+					line = fmt.Sprintf("final List<%v> %v;", propTypeFirstInArray, cleanPropName(propName))
+				case interface{}, []interface{}:
+					line = fmt.Sprintf("final List<%v> %v;", propType, cleanPropName(propName))
+				}
+			}
 		default:
 			line = fmt.Sprintf("final %v %v;", propType, cleanPropName(propName))
 		}

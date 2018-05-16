@@ -6,7 +6,7 @@ _work in progress!_
 
 ### known issues
 
-* does not work with arrays of simple types (e.g. array of strings)
+* ~~does not work with arrays of simple types (e.g. array of strings)~~
 * not tested with nested arrays
 * not tested with duplicate property names
 

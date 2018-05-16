@@ -19,7 +19,7 @@ func main() {
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
 			Name:  "in",
-			Usage: "specify input file",
+			Usage: "specify input file (if not using pipe)",
 		},
 		cli.StringFlag{
 			Name:  "out",

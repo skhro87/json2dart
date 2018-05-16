@@ -68,7 +68,7 @@ func buildCurrentClass(c *gabs.Container, className string) (ClassDef, error) {
 	code := buildClassCode(className, linesFields, constructor, linesFromJson)
 
 	return ClassDef{
-		Code: code,
+		Code:      code,
 		ClassName: className,
 	}, nil
 }
@@ -116,11 +116,15 @@ func buildNestedClasses(c *gabs.Container, classes []ClassDef) ([]ClassDef, erro
 					return []ClassDef{}, fmt.Errorf("err getting first child of array : %v", err.Error())
 				}
 
-				propNestedClasses, err := containerToClasses(containerFirstInArray, childObjectClassNameFromPropName(propName), classes)
-				if err != nil {
-					return []ClassDef{}, fmt.Errorf("err converting container to classes for prop %v : %v", propName, err.Error())
+				switch containerFirstInArray.Data().(type) {
+				case string, int, float64:
+				case interface{}, []interface{}:
+					propNestedClasses, err := containerToClasses(containerFirstInArray, childObjectClassNameFromPropName(propName), classes)
+					if err != nil {
+						return []ClassDef{}, fmt.Errorf("err converting container to classes for prop %v : %v", propName, err.Error())
+					}
+					nestedClasses = append(nestedClasses, propNestedClasses...)
 				}
-				nestedClasses = append(nestedClasses, propNestedClasses...)
 			}
 		}
 	}
