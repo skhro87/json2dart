@@ -6,32 +6,70 @@ _work in progress!_
 
 ### Example Usage
 
-```
-λ curl https://jsonplaceholder.typicode.com/posts/1 | go run json2dart.go
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-100   292  100   292    0     0   4825      0 --:--:-- --:--:-- --:--:--  4866
-2018/05/15 23:43:39 converting...
-2018/05/15 23:43:39 done!
+```javascript
+λ cat example.json
+{
+  "id": 55,
+  "name": "Alf",
+  "something": {
+    "beard": "long",
+    "items": 1
+  },
+  "items": [
+    {
+      "score": 5
+    }
+  ]
+}
 ```
 
 ```dart
+λ go build && cat example.json | json2dart.exe
+2018/05/16 11:33:37 converting...
+2018/05/16 11:33:37 done!
+2018/05/16 11:33:37
+class Something {
+        final String beard;
+        final num items;
+
+        Something({this.beard,this.items})
+
+        Something.fromJson(Map<String, dynamic> json) {
+                return new Something(
+                        beard: json['beard'],
+                        items: json['items'],
+                );
+        }
+}
+
+class Item {
+        final num score;
+
+        Item({this.score})
+
+        Item.fromJson(Map<String, dynamic> json) {
+                return new Item(
+                        score: json['score'],
+                );
+        }
+}
+
 class Root {
-	final num id;
-	final String title;
-	final String body;
-	final num userId;
+        final num id;
+        final String name;
+        final Something something;
+        final List<Item> items;
 
-	Root({this.title,this.body,this.userId,this.id})
+        Root({this.items,this.id,this.name,this.something})
 
-	Root.fromJson(Map<String, dynamic> json) {
-		return new Root(
-			title: json['title'],
-			body: json['body'],
-			userId: json['userId'],
-			id: json['id'],
-		);
-	}
+        Root.fromJson(Map<String, dynamic> json) {
+                return new Root(
+                        name: json['name'],
+                        something: json['something'],
+                        items: json['items'],
+                        id: json['id'],
+                );
+        }
 }
 ```
 
@@ -39,6 +77,6 @@ class Root {
 - [x] basic implementation
 - [x] add nested object support
 - [x] add array support
-- [ ] add file output support
-- [ ] proper tests
+- [ ] improve input/output options
+- [ ] proper tests / edge cases
 - [ ] make it pretty ^^
