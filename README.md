@@ -36,6 +36,7 @@ class Root {
 ### To-Do
 - [x] basic implementation
 - [x] add nested object support
-- [ ] add array support
+- [x] add array support
 - [ ] add file output support
+- [ ] proper tests
 - [ ] make it pretty ^^
