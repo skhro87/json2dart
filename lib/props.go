@@ -17,7 +17,7 @@ func typeOfProp(propName string, prop interface{}) (string, error) {
 		propType = "num"
 	case int:
 		propType = "num"
-	case map[string]interface{}:
+	case map[string]interface{}, []interface{}:
 		propType = childObjectClassNameFromPropName(propName)
 	default:
 		return "", fmt.Errorf("unsupported prop type : %v", reflect.TypeOf(prop))
@@ -33,7 +33,14 @@ func linesFields(properties map[string]*gabs.Container) ([]string, error) {
 			return []string{}, fmt.Errorf("err getting prop type of %v : %v", prop.Data(), err.Error())
 		}
 
-		line := fmt.Sprintf("final %v %v;", propType, cleanPropName(propName))
+		var line string
+		switch prop.Data().(type) {
+		case []interface{}:
+			line = fmt.Sprintf("final List<%v> %v;", propType, cleanPropName(propName))
+		default:
+			line = fmt.Sprintf("final %v %v;", propType, cleanPropName(propName))
+		}
+
 		lines = append(lines, line)
 	}
 
